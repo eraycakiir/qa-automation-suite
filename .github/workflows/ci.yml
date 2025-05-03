@@ -34,7 +34,10 @@ jobs:
         run: allure generate target/allure-results --clean -o target/allure-report
 
       - name: 📦 Upload Allure Report Artifact
-        uses: actions/upload-artifact@v2  # <<== 🔧 v2 olarak düzeltildi
+        uses: actions/upload-artifact@v2.3.1
         with:
           name: allure-report
           path: target/allure-report
+
+
+
