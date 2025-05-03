@@ -1,0 +1,35 @@
+# 🧪 Stage 1 - Build & Test
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    wget gnupg libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libxcomposite1 \
+    libxrandr2 libxdamage1 libxkbcommon0 libgbm1 libasound2 libxshmfence1 \
+    libgtk-3-0 libx11-xcb1 libdrm2 && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+COPY . .
+RUN mvn clean test -Dsurefire.suiteXmlFiles=testng.xml -DconfigFile=/app/config.properties
+
+# 🧪 Stage 2 - Serve Allure Report
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y wget unzip && \
+    wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz && \
+    tar -xzf allure-2.24.0.tgz && mv allure-2.24.0 /opt/allure && ln -s /opt/allure/bin/allure /usr/bin/allure && \
+    rm -rf /var/lib/apt/lists/* allure-2.24.0.tgz
+
+# ❗️Doğru klasörü kopyala
+COPY --from=build /app/target/surefire-reports /app/allure-results
+
+
+EXPOSE 8080
+
+# ❗️Doğru dizinden sun
+CMD ["sh", "-c", "allure serve /app/allure-results --port 8080"]
