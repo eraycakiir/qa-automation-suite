@@ -1,0 +1,23 @@
+name: Run Playwright + API Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run tests in Docker
+        run: |
+          docker build -t qa-automation-suite .
+          docker run --rm qa-automation-suite
