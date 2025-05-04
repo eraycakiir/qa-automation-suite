@@ -1,43 +1,37 @@
-name: Docker Pipeline
+name: Docker Allure CI
 
 on:
   push:
     branches: [main]
 
 jobs:
-  docker-test:
+  docker-allure:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout repository
+      - name: 📥 Checkout repo
         uses: actions/checkout@v3
 
-      - name: 🐳 Build Docker image with tests
+      - name: 🐳 Build Docker image
         run: docker build -t qa-tests .
 
-      - name: 🕒 Write timestamp and environment info
+      - name: 🚀 Run tests & generate Allure report
         run: |
-          mkdir -p allure-results
-          NOW=$(date)
-          echo "Report Generated At: $NOW" > allure-results/build-info.txt
-          echo "Environment=CI" > allure-results/environment.properties
-          echo "Executed By=GitHub Actions" >> allure-results/environment.properties
-          echo "Project Name=QA Automation Suite" >> allure-results/environment.properties
-          echo "Build Time=$NOW" >> allure-results/environment.properties
-
-      - name: 🚀 Run test container to generate Allure results
-        run: |
-          mkdir -p allure-report allure-results
+          mkdir -p allure-results allure-report
           docker run --rm \
             -v ${{ github.workspace }}/allure-results:/app/allure-results \
             -v ${{ github.workspace }}/allure-report:/app/allure-report \
-            qa-tests
+            qa-tests \
+            sh -c "
+              mvn clean test -Dsurefire.suiteXmlFiles=testng.xml &&
+              echo 'Environment=CI' > allure-results/environment.properties &&
+              echo 'Executed By=GitHub Actions' >> allure-results/environment.properties &&
+              echo 'Project Name=QA Automation Suite' >> allure-results/environment.properties &&
+              allure generate allure-results --clean -o allure-report
+            "
 
-      - name: 📦 Upload Allure Report Artifact (ZIP)
-        run: |
-          cd allure-report
-          zip -r ../allure-report.zip .
-        shell: bash
+      - name: 🗜️ Zip Allure report
+        run: zip -r allure-report.zip allure-report
 
       - name: ⬆️ Upload Allure Report
         uses: actions/upload-artifact@v4
