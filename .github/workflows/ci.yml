@@ -13,8 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: 🐳 Build Docker image with tests and Allure
-        run: |
-          docker build -t qa-tests .
+        run: docker build -t qa-tests .
 
       - name: 📁 Create folders for report mounting
         run: |
@@ -25,13 +24,11 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}/allure-results:/app/allure-results \
             -v ${{ github.workspace }}/allure-report:/app/allure-report \
-            -v ${{ github.workspace }}/allure-report.zip:/app/allure-report.zip \
             qa-tests
 
-      - name: 📦 Zip Allure Report
+      - name: 📦 Zip Allure Report (outside container)
         run: |
-          cd allure-report
-          zip -r ../allure-report.zip .
+          zip -r allure-report.zip allure-report
 
       - name: ⬆️ Upload Allure Report
         uses: actions/upload-artifact@v4
