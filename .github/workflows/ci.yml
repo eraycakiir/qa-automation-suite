@@ -18,19 +18,11 @@ jobs:
 
       - name: 🚀 Run test container to generate Allure results
         run: |
-          mkdir -p allure-report allure-results
           docker run --rm \
-            -v ${{ github.workspace }}/allure-results:/app/allure-results \
-            -v ${{ github.workspace }}/allure-report:/app/allure-report \
+            -v ${{ github.workspace }}:/app \
             qa-tests
 
-      - name: 📦 Upload Allure Report Artifact (ZIP)
-        run: |
-          cd allure-report
-          zip -r ../allure-report.zip .
-        shell: bash
-
-      - name: ⬆️ Upload Allure Report
+      - name: ⬆️ Upload Allure Report ZIP
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
