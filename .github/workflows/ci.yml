@@ -19,7 +19,9 @@ jobs:
           distribution: 'temurin'
 
       - name: 🐳 Build and test with Maven
-        run: mvn clean test -Dsurefire.suiteXmlFiles=testng.xml
+        run: |
+          mvn clean test -Dsurefire.suiteXmlFiles=testng.xml
+          echo "✅ Maven tests completed"
 
       - name: 🔍 Check allure-results content
         run: |
@@ -34,6 +36,13 @@ jobs:
           unzip allure-2.24.0.zip
           sudo mv allure-2.24.0 /opt/allure
           sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+
+      - name: 🧾 Write environment.properties
+        run: |
+          mkdir -p allure-results
+          echo "Environment=CI" >> allure-results/environment.properties
+          echo "Executed By=GitHub Actions" >> allure-results/environment.properties
+          echo "Project Name=QA Automation Suite" >> allure-results/environment.properties
 
       - name: 🧪 Generate Allure report
         run: allure generate allure-results --clean -o allure-report
