@@ -1,4 +1,5 @@
-name: Docker Allure Pipeline
+# 📄 .github/workflows/ci.yml
+name: Docker Allure CI Pipeline
 
 on:
   push:
@@ -12,23 +13,23 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v3
 
-      - name: 🐳 Build Docker image with tests and Allure
-        run: docker build -t qa-tests .
+      - name: 🛣️ Build Docker image with tests
+        run: |
+          docker build -t qa-tests .
 
-      - name: 📁 Create folders for report mounting
+      - name: ✨ Run container to generate Allure results & zip report
         run: |
           mkdir -p allure-report allure-results
-
-      - name: 🚀 Run test container to generate Allure results
-        run: |
           docker run --rm \
             -v ${{ github.workspace }}/allure-results:/app/allure-results \
             -v ${{ github.workspace }}/allure-report:/app/allure-report \
             qa-tests
 
-      - name: 📦 Zip Allure Report (outside container)
+      - name: 📆 Zip Allure report
         run: |
-          zip -r allure-report.zip allure-report
+          cd allure-report
+          zip -r ../allure-report.zip .
+        shell: bash
 
       - name: ⬆️ Upload Allure Report
         uses: actions/upload-artifact@v4
