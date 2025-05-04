@@ -13,16 +13,33 @@ jobs:
         uses: actions/checkout@v3
 
       - name: 🐳 Build Docker image with tests
+        run: docker build -t qa-tests .
+
+      - name: 🕒 Write timestamp and environment info
         run: |
-          docker build -t qa-tests .
+          mkdir -p allure-results
+          NOW=$(date)
+          echo "Report Generated At: $NOW" > allure-results/build-info.txt
+          echo "Environment=CI" > allure-results/environment.properties
+          echo "Executed By=GitHub Actions" >> allure-results/environment.properties
+          echo "Project Name=QA Automation Suite" >> allure-results/environment.properties
+          echo "Build Time=$NOW" >> allure-results/environment.properties
 
       - name: 🚀 Run test container to generate Allure results
         run: |
+          mkdir -p allure-report allure-results
           docker run --rm \
-            -v ${{ github.workspace }}:/app \
+            -v ${{ github.workspace }}/allure-results:/app/allure-results \
+            -v ${{ github.workspace }}/allure-report:/app/allure-report \
             qa-tests
 
-      - name: ⬆️ Upload Allure Report ZIP
+      - name: 📦 Upload Allure Report Artifact (ZIP)
+        run: |
+          cd allure-report
+          zip -r ../allure-report.zip .
+        shell: bash
+
+      - name: ⬆️ Upload Allure Report
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
