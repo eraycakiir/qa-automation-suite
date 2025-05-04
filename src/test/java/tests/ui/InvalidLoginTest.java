@@ -5,7 +5,6 @@ import tests.base.BaseTest;
 import pages.LoginPage;
 import io.qameta.allure.Step;
 import io.qameta.allure.Description;
-
 import static org.testng.Assert.assertTrue;
 
 public class InvalidLoginTest extends BaseTest {
