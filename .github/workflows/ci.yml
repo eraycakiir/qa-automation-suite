@@ -21,6 +21,11 @@ jobs:
       - name: 🐳 Build and test with Maven
         run: mvn clean test -Dsurefire.suiteXmlFiles=testng.xml
 
+      - name: 🔍 Check allure-results content
+        run: |
+          echo "📁 allure-results içeriği:"
+          ls -lah allure-results || echo "❌ allure-results not found"
+
       - name: ⬇️ Install Allure commandline
         run: |
           sudo apt-get update
