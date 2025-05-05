@@ -5,7 +5,15 @@
         <listener class-name="hooks.Hooks"/>
     </listeners>
 
-    <test name="All Tests">
+    <test name="Tagged Tests">
+        <groups>
+            <run>
+                <include name="smoke"/>
+                <include name="regression"/>
+                <include name="api-only"/>
+                <include name="ui-only"/>
+            </run>
+        </groups>
         <packages>
             <package name="tests"/>
         </packages>

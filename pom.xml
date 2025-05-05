@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.eraycakiir</groupId>
@@ -9,15 +10,15 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <!-- ✳️ Buraya parametre ekledik -->
+        <testGroup>smoke</testGroup>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <aspectj.version>1.9.20</aspectj.version>
     </properties>
 
-
     <dependencies>
-        <!-- TestNG -->
+        <!-- ✅ TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -25,20 +26,21 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Playwright -->
+        <!-- ✅ Playwright -->
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
             <version>1.45.0</version>
         </dependency>
 
-        <!-- RestAssured -->
+        <!-- ✅ RestAssured -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>5.3.1</version>
         </dependency>
-        <!-- Allure TestNG -->
+
+        <!-- ✅ Allure TestNG Integration -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
@@ -46,10 +48,9 @@
         </dependency>
     </dependencies>
 
-
     <build>
         <plugins>
-            <!-- Surefire Plugin TestNG for  -->
+            <!-- ✅ Surefire Plugin with group filtering -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -58,9 +59,11 @@
                     <suiteXmlFiles>
                         <suiteXmlFile>testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
+                    <groups>${testGroup}</groups>
                 </configuration>
             </plugin>
-            <!-- Allure Plugin -->
+
+            <!-- ✅ Allure Report Plugin -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
@@ -71,4 +74,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

@@ -1,4 +1,4 @@
-name: Run Tagged Tests with Allure
+name: Run Tagged Playwright + API Tests
 
 on:
   workflow_dispatch:
@@ -25,18 +25,17 @@ jobs:
             echo "No previous history found, skipping."
           fi
 
-      - name: 🐳 Build Docker image with selected test group
+      - name: 🐳 Build Docker image with tests
         run: docker build --build-arg TEST_GROUP=${{ github.event.inputs.group }} -t qa-tests .
 
       - name: 📦 Copy zipped Allure report from container
         run: |
           mkdir -p allure-report
           docker run --rm \
-            -e TEST_GROUP=${{ github.event.inputs.group }} \
             -v ${{ github.workspace }}/allure-report:/out \
             qa-tests sh -c "cp /app/allure-report.zip /out/"
 
-      - name: ⬆️ Upload Allure Report ZIP
+      - name: ⬆️ Upload Allure Report
         uses: actions/upload-artifact@v4
         with:
           name: allure-report

@@ -13,17 +13,9 @@ RUN mvn dependency:go-offline -B
 
 COPY . .
 
-# ❗️ARG ve ENV kısmı çıkarıldı
-RUN rm -rf allure-results/* && \
-    mvn clean test -Dsurefire.suiteXmlFiles=testng.xml -Dgroups=$TEST_GROUP -DconfigFile=config.properties
-
-# Çalıştırılacak test grubu
 ARG TEST_GROUP=smoke
-ENV TEST_GROUP=${TEST_GROUP}
-
-# Testleri çalıştır (🔧 DÜZELTİLDİ: -Dgroups)
 RUN rm -rf allure-results/* && \
-    mvn clean test -Dsurefire.suiteXmlFiles=testng.xml -Dgroups=${TEST_GROUP} -DconfigFile=config.properties
+    mvn clean test -Dsurefire.suiteXmlFiles=testng.xml -DtestGroup=${TEST_GROUP} -DconfigFile=config.properties
 
 # ✅ Report generation
 FROM openjdk:17-jdk-slim AS report
@@ -38,7 +30,6 @@ RUN apt-get update && apt-get install -y wget unzip zip && \
 
 COPY --from=build /app/allure-results /app/allure-results
 
-# Allure trend için history klasörü varsa taşı
 RUN if [ -d /app/allure-results/history ]; then \
       mkdir -p /app/allure-report/history && \
       cp -r /app/allure-results/history/* /app/allure-report/history/; \
