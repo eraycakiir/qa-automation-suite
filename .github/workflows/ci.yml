@@ -1,11 +1,11 @@
-name: Docker Allure CI
+name: Run Tests with Allure inside Docker
 
 on:
   push:
     branches: [main]
 
 jobs:
-  docker-test:
+  docker-allure:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,12 +15,14 @@ jobs:
       - name: 🐳 Build Docker image with tests
         run: docker build -t qa-tests .
 
-      - name: 🚀 Extract Allure report from container
+      - name: 📦 Copy zipped Allure report from container
         run: |
           mkdir -p allure-report
-          docker run --rm -v ${{ github.workspace }}/allure-report:/out qa-tests sh -c "cp /app/allure-report.zip /out/"
+          docker run --rm \
+            -v ${{ github.workspace }}/allure-report:/out \
+            qa-tests sh -c "cp /app/allure-report.zip /out/"
 
-      - name: ⬆️ Upload Allure Report ZIP
+      - name: ⬆️ Upload Allure Report
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
