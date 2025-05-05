@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.eraycakiir</groupId>
@@ -10,15 +9,13 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <!-- ✳️ Buraya parametre ekledik -->
-        <testGroup>smoke</testGroup>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <groups>smoke</groups>                <!-- varsayılan grup -->
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
-        <!-- ✅ TestNG -->
+        <!-- TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -26,53 +23,52 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- ✅ Playwright -->
+        <!-- Playwright -->
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
             <version>1.45.0</version>
         </dependency>
 
-        <!-- ✅ RestAssured -->
+        <!-- Rest-Assured -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>5.3.1</version>
         </dependency>
 
-        <!-- ✅ Allure TestNG Integration -->
+        <!-- Allure + SLF4J -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
             <version>2.24.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.13</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- ✅ Surefire Plugin with group filtering -->
+            <!-- 🔹 Surefire yalnızca grupları dinliyor; XML yok -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M8</version>
                 <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                    <groups>${testGroup}</groups>
+                    <groups>${groups}</groups>        <!-- CLI: -Dgroups=ui-only -->
                 </configuration>
             </plugin>
 
-            <!-- ✅ Allure Report Plugin -->
+            <!-- 🔹 Allure raporu -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
                 <version>2.10.0</version>
-                <configuration>
-                    <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
-                </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>
