@@ -1,6 +1,5 @@
 package tests.api;
 
-
 import io.qameta.allure.Step;
 import io.qameta.allure.Description;
 import io.restassured.response.Response;
@@ -16,7 +15,7 @@ import static org.hamcrest.Matchers.*;
 
 public class UserApiTest extends BaseApiTest {
 
-    @Test
+    @Test(groups = {"smoke", "api-only"})
     @Description("Verify that the second page of users returns a valid non-empty list and contains correct email format")
     public void testUserListPage2ReturnsValidData() {
         Response response = sendGetUserListRequest();
@@ -32,11 +31,6 @@ public class UserApiTest extends BaseApiTest {
     private void validateUserListResponse(Response response) {
         response.then().statusCode(200);
         List<Map<String, Object>> users = response.jsonPath().getList("data");
-
-        System.out.println("User List:");
-        for (Map<String, Object> user : users) {
-            System.out.println("- " + user.get("first_name") + " " + user.get("last_name") + " | " + user.get("email"));
-        }
 
         assertThat("User list should not be empty", users, is(not(empty())));
         String email = response.jsonPath().getString("data[0].email");

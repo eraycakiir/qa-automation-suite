@@ -1,9 +1,8 @@
-# ✅ Dockerfile (final)
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# UI testler için gerekli bağımlılıkları yükle
+# Gerekli sistem bağımlılıkları (Playwright için)
 RUN apt-get update && apt-get install -y \
     wget gnupg unzip zip libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
     libxcomposite1 libxrandr2 libxdamage1 libxkbcommon0 libgbm1 \
@@ -14,10 +13,16 @@ COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
 COPY . .
-RUN rm -rf allure-results/* && \
-    mvn clean test -Dsurefire.suiteXmlFiles=testng.xml -DconfigFile=config.properties
 
-# ✅ Report stage
+# Çalıştırılacak test grubu
+ARG TEST_GROUP=smoke
+ENV TEST_GROUP=${TEST_GROUP}
+
+# Testleri çalıştır
+RUN rm -rf allure-results/* && \
+    mvn clean test -Dsurefire.suiteXmlFiles=testng.xml -Dgroup=${TEST_GROUP} -DconfigFile=config.properties
+
+# ✅ Report generation
 FROM openjdk:17-jdk-slim AS report
 
 WORKDIR /app
@@ -29,6 +34,12 @@ RUN apt-get update && apt-get install -y wget unzip zip && \
     rm -rf /var/lib/apt/lists/* allure-2.24.0.zip
 
 COPY --from=build /app/allure-results /app/allure-results
+
+# Allure trend için history korunuyorsa taşı
+RUN if [ -d /app/allure-results/history ]; then \
+      mkdir -p /app/allure-report/history && \
+      cp -r /app/allure-results/history/* /app/allure-report/history/; \
+    fi
 
 RUN allure generate /app/allure-results --clean -o /app/allure-report && \
     zip -r /app/allure-report.zip /app/allure-report

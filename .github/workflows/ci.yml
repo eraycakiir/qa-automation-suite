@@ -1,8 +1,12 @@
-name: Run Tests with Allure inside Docker
+name: Run Tagged Tests with Allure
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      group:
+        description: 'Test group (smoke, regression, api-only, ui-only)'
+        required: true
+        default: 'smoke'
 
 jobs:
   docker-allure:
@@ -12,6 +16,13 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v3
 
+      - name: 🔄 Reuse Allure history
+        run: |
+          mkdir -p allure-results/history
+          if [ -d allure-report/history ]; then
+            cp -r allure-report/history/* allure-results/history/
+          fi
+
       - name: 🐳 Build Docker image with tests
         run: docker build -t qa-tests .
 
@@ -19,6 +30,7 @@ jobs:
         run: |
           mkdir -p allure-report
           docker run --rm \
+            -e TEST_GROUP=${{ github.event.inputs.group }} \
             -v ${{ github.workspace }}/allure-report:/out \
             qa-tests sh -c "cp /app/allure-report.zip /out/"
 
