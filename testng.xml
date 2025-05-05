@@ -5,12 +5,7 @@
         <listener class-name="hooks.Hooks"/>
     </listeners>
 
-    <test name="Tagged Tests">
-        <groups>
-            <run>
-                <include name="${group}"/>
-            </run>
-        </groups>
+    <test name="All Tests">
         <packages>
             <package name="tests"/>
         </packages>
