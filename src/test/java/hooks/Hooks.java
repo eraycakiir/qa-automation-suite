@@ -8,7 +8,6 @@ import utils.AllureMetadataWriter;
 import java.time.LocalDateTime;
 
 public class Hooks implements ITestListener {
-
     private static boolean isMetadataWritten = false;
 
     @Override
