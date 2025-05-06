@@ -11,21 +11,22 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v3
 
       - name: 🐳 Build & run tests in Docker
-        run: docker build --build-arg groups=${{ github.event.inputs.group }} -t qa-tests .
+        run: |
+          docker build --build-arg groups=${{ github.event.inputs.group }} -t playwright-tests .
 
-      - name: 📦 Copy zipped Allure report
+      - name: 📦 Extract zipped Allure report
         run: |
           mkdir -p allure-report
-          docker run --rm \
-            -v ${{ github.workspace }}/allure-report:/out \
-            qa-tests bash -c "cp /app/allure-report.zip /out/"
+          docker run --rm -v ${{ github.workspace }}/allure-report:/out \
+            playwright-tests bash -c "cp /app/allure-report.zip /out/"
 
-      - name: ⬆️ Upload Allure artifact
+      - name: ⬆️ Upload Allure report as artifact
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
