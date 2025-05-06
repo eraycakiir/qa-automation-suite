@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       group:
-        description: 'Test group (smoke, regression, api-only, ui-only, all)'
-        required: true
-        default: 'all'
+        description: 'Optional test group (smoke, regression, api-only, ui-only). Leave empty to run all tests'
+        required: false
+        default: ''
 
 jobs:
   tests:
@@ -18,7 +18,7 @@ jobs:
 
       - name: 🐳 Build & run tests in Docker
         run: |
-          docker build --build-arg groups=${{ github.event.inputs.group }} -t playwright-tests .
+          docker build --build-arg groups="${{ github.event.inputs.group }}" -t playwright-tests .
 
       - name: 📦 Extract zipped Allure report
         run: |

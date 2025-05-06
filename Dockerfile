@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libxshmfence1 libgtk-3-0 libx11-xcb1 libdrm2 && \
     rm -rf /var/lib/apt/lists/*
 
-# Bağımlılıkları önceden indir
+# Maven bağımlılıklarını indir
 COPY pom.xml .
 RUN mvn -B dependency:go-offline
 
@@ -23,19 +23,18 @@ RUN mvn -B exec:java \
     -Dexec.mainClass=com.microsoft.playwright.CLI \
     -Dexec.args="install"
 
-# 🔄 Önceki Allure verilerini temizle
+# Allure sonuçlarını temizle
 RUN rm -rf allure-results
 
-# Testleri çalıştır (grup verilmemişse tüm testleri çalıştır)
-ARG groups=all
-RUN if [ "$groups" = "all" ]; then \
-      echo "🚀 Running all tests (no groups filter)" && \
+# Testleri çalıştır (group verilirse filtrele, yoksa tümünü çalıştır)
+ARG groups=
+RUN if [ -z "$groups" ]; then \
+      echo "🚀 Running all tests (no group filter)" && \
       mvn -B clean test; \
     else \
       echo "🎯 Running group: $groups" && \
       mvn -B clean test -Dgroups=$groups; \
     fi
-
 
 #############################################
 #           2. Raporlama Aşaması            #
@@ -50,7 +49,7 @@ RUN apt-get update && apt-get install -y wget unzip zip && \
     ln -s /opt/allure/bin/allure /usr/bin/allure && \
     rm -rf /var/lib/apt/lists/* allure-2.24.0.zip
 
-# Sonuçları kopyala ve rapor üret
+# Allure sonuçlarını al ve raporu üret
 COPY --from=build /app/allure-results /app/allure-results
 RUN allure generate /app/allure-results --clean -o /app/allure-report && \
     zip -r /app/allure-report.zip /app/allure-report
