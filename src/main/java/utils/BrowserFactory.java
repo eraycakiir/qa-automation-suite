@@ -8,20 +8,20 @@ public class BrowserFactory {
     private static Playwright playwright;
     private static Browser browser;
 
-    /** Tek seferlik (singleton) Chromium başlatır. */
+    /** seferlik (singleton) Chromium . */
     public static Browser getBrowser() {
         if (browser == null) {
             playwright = Playwright.create();
 
             // ► headless ayarını config.properties’ten çek
-            String headlessStr = ConfigReader.getProperty("headless"); // null olabilir
+            String headlessStr = ConfigReader.getProperty("headless");
             boolean headless = headlessStr == null || Boolean.parseBoolean(headlessStr);
 
             BrowserType.LaunchOptions opts = new BrowserType.LaunchOptions()
                     .setHeadless(headless)
                     .setArgs(List.of(
-                            "--no-sandbox",                 // Docker uyumu
-                            "--disable-dev-shm-usage"       // bellek hatalarını azaltır
+                            "--no-sandbox",
+                            "--disable-dev-shm-usage"
                     ));
 
             browser = playwright.chromium().launch(opts);
@@ -29,7 +29,7 @@ public class BrowserFactory {
         return browser;
     }
 
-    /** Playwright kaynaklarını kapatır. */
+    /** Playwright CLOSED. */
     public static void closeAll() {
         if (browser != null)    browser.close();
         if (playwright != null) playwright.close();

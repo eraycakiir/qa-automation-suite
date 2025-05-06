@@ -8,7 +8,7 @@ import org.testng.annotations.Listeners;
 import hooks.Hooks;
 
 @Listeners({AllureTestNg.class, Hooks.class})
-public abstract class BaseTest {  // ✅ soyut sınıf
+public abstract class BaseTest {
     protected Browser browser;
     protected BrowserContext context;
     protected Page page;
