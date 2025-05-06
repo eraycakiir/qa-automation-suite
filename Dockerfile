@@ -29,10 +29,13 @@ RUN rm -rf allure-results
 # Testleri çalıştır (grup verilmemişse tüm testleri çalıştır)
 ARG groups=all
 RUN if [ "$groups" = "all" ]; then \
+      echo "🚀 Running all tests (no groups filter)" && \
       mvn -B clean test; \
     else \
+      echo "🎯 Running group: $groups" && \
       mvn -B clean test -Dgroups=$groups; \
     fi
+
 
 #############################################
 #           2. Raporlama Aşaması            #
