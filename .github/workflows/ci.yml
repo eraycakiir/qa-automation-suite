@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       group:
-        description: 'Test group (smoke, regression, api-only, ui-only)'
+        description: 'Test group (smoke, regression, api-only, ui-only, all)'
         required: true
-        default: 'smoke'
+        default: 'all'
 
 jobs:
   tests:
